@@ -1,1 +1,12 @@
+# Secrets and environment variables
+.env
+
+# Python folders
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+
+# VS Code 
 .vscode/
