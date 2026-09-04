@@ -2,7 +2,7 @@
 
 A local proxy that redacts personal information from text before it's sent to an LLM API.
 
-The idea: you want to use a cloud model like Gemini, but the text you're sending might contain names, phone numbers, or Israeli ID numbers you don't want leaving your network. AI Safety Shield runs the redaction step locally first and only sends the sanitized version to the model — with an audit log of exactly what was caught.
+The idea: you want to use a cloud model like Gemini, but the text you're sending might contain names, phone numbers, or Israeli ID numbers you don't want leaving your network. AI Safety Shield runs the redaction step locally first and only sends the sanitized version to the model, with an audit log of exactly what was caught.
 
 ## How it works
 
@@ -25,5 +25,5 @@ python -m streamlit run shield.py
 ```
 
 ## Known limitations
-- Detection relies on Presidio's default models plus the three custom recognizers above — not tuned for edge cases a production filter would need to handle.
+- Detection relies on Presidio's default models plus the three custom recognizers above, and isn't tuned for edge cases a production filter would need to handle.
 - Single-file app: no persistence between sessions.
