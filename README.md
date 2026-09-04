@@ -1,30 +1,29 @@
-# AI Safety Shield 🛡️
-### A Secure PII Sanitization Pipeline for LLM Integration
+# AI Safety Shield
 
-AI Safety Shield is a local proxy service designed to intercept sensitive data (PII) before it leaves the organization's network. It redacts identified entities and forwards a sanitized payload to cloud-based AI models (Gemini 2.5 Flash), ensuring data privacy while maintaining AI utility.
+A local proxy that redacts personal information from text before it's sent to an LLM API.
 
-## 🚀 Key Features
-- **Local PII Redaction:** Uses Microsoft Presidio for robust, on-premise entity recognition.
-- **Israeli ID Validation:** Custom implementation of the **Luhn Algorithm** for high-confidence Israeli ID detection.
-- **Enterprise Deny-Lists:** Built-in recognizers for custom corporate secrets and identifiers.
-- **Performance Monitoring:** Real-time tracking of Local vs. Cloud latency.
-- **Audit Reporting:** Generates detailed sanitization logs with JSON export capability.
+The idea: you want to use a cloud model like Gemini, but the text you're sending might contain names, phone numbers, or Israeli ID numbers you don't want leaving your network. AI Safety Shield runs the redaction step locally first and only sends the sanitized version to the model — with an audit log of exactly what was caught.
 
-## 🛠️ Tech Stack
-- **Language:** Python
-- **Privacy Engines:** Microsoft Presidio (Analyzer & Anonymizer)
-- **AI Integration:** Google GenAI SDK (Gemini 2.5 Flash)
-- **Framework:** Streamlit (Data Dashboard)
-- **Data Handling:** Pandas
+## How it works
 
-## 🏗️ Architecture
-1. **Ingestion Layer:** Accepts raw text or .txt file uploads.
-2. **Analysis Layer:** Scans text for PERSON, ORGANIZATION, IL_ID, PHONE, etc.
-3. **Redaction Layer:** Replaces sensitive entities with secure tags (e.g., `<PERSON>`).
-4. **Inference Layer:** Forwards sanitized text to Gemini API for secure response.
+1. You paste text (or upload a `.txt` file) into the Streamlit app.
+2. A local Presidio analyzer scans it for PERSON, ORGANIZATION, and PHONE_NUMBER entities, plus three custom recognizers: an Israeli mobile number pattern, a deny-list for flagging custom terms (e.g. internal project names), and an Israeli ID validator using a Luhn-variant checksum.
+3. Matches are replaced with tags like `<PERSON>`.
+4. Only the redacted text is sent to Gemini 2.5 Flash, and the response is shown with the tags still in place.
 
-## 🔧 Installation
-1. Clone the repository.
-2. Install dependencies: `pip install streamlit presidio-analyzer presidio-anonymizer google-genai python-dotenv pandas`.
-3. Configure your `.env` file with `GEMINI_API_KEY`.
-4. Run the app: `python -m streamlit run shield.py`.
+## Stack
+- Python, Streamlit
+- Microsoft Presidio (analyzer + anonymizer)
+- Google GenAI SDK (Gemini 2.5 Flash)
+- Pandas for the audit log
+
+## Running it
+```bash
+pip install streamlit presidio-analyzer presidio-anonymizer google-genai python-dotenv pandas
+# add GEMINI_API_KEY to .env
+python -m streamlit run shield.py
+```
+
+## Known limitations
+- Detection relies on Presidio's default models plus the three custom recognizers above — not tuned for edge cases a production filter would need to handle.
+- Single-file app: no persistence between sessions.
